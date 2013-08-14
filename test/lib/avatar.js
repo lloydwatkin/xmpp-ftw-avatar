@@ -223,5 +223,67 @@ describe('Avatar', function() {
         })
 
     })
+    
+    describe('Set meta data', function() {
+
+        it('Errors if no callback provided', function(done) {
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            socket.once('xmpp.error.client', function(error) {
+                error.type.should.equal('modify')
+                error.condition.should.equal('client-error')
+                error.description.should.equal("Missing callback")
+                error.request.should.eql({})
+                xmpp.removeAllListeners('stanza')
+                done()
+            })
+            socket.emit('xmpp.avatar.metadata', {})
+        })
+
+        it('Errors if non-function callback provided', function(done) {
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            socket.once('xmpp.error.client', function(error) {
+                error.type.should.equal('modify')
+                error.condition.should.equal('client-error')
+                error.description.should.equal("Missing callback")
+                error.request.should.eql({})
+                xmpp.removeAllListeners('stanza')
+                done()
+            })
+            socket.emit('xmpp.avatar.metadata', {}, true)
+        })
+        
+        it('Allows disabling of metadata publishing', function(done) {
+            var request = { disable: true }
+            xmpp.once('stanza', function(stanza) {
+                stanza.is('iq').should.be.true
+                stanza.attrs.type.should.equal('set')
+                stanza.attrs.id.should.exist
+                var publish = stanza.getChild('pubsub', avatar.NS_PUBSUB)
+                    .getChild('publish')
+                publish.attrs.node.should.equal(avatar.NS_IMG)
+                var item = publish.getChild('item')
+                item.should.exist
+                var metadata = item.getChild('metadata', avatar.NS_META)
+                metadata.should.exist
+                metadata.children.length.should.equal(0)
+                metadata.attrs.should.eql({ xmlns: 'urn:xmpp:avatar:metadata' })
+                manager.makeCallback(helper.getStanza('iq-result'))
+            })
+            socket.emit(
+                'xmpp.avatar.metadata',
+                request,
+                function(error, success) { 
+                    should.not.exist(error)
+                    success.should.be.true
+                    done()
+                }
+            )
+        })
+        
+    })
 
 })
