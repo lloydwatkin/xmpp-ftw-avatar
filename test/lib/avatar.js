@@ -360,6 +360,174 @@ describe('Avatar', function() {
             )
         })
         
+        it('Errors if \'bytes\' key missing', function(done) {
+            var request = {}
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            var callback = function(error, success) {
+                should.not.exist(success)
+                error.type.should.equal('modify')
+                error.condition.should.equal('client-error')
+                error.description.should.equal("Missing 'bytes' key")
+                error.request.should.eql(request)
+                xmpp.removeAllListeners('stanza')
+                done()
+            }
+            socket.emit(
+                'xmpp.avatar.metadata',
+                request,
+                callback
+            )
+        })
+        
+        it('Errors if \'id\' key missing', function(done) {
+            var request = { bytes: 2345 }
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            var callback = function(error, success) {
+                should.not.exist(success)
+                error.type.should.equal('modify')
+                error.condition.should.equal('client-error')
+                error.description.should.equal("Missing 'id' key")
+                error.request.should.eql(request)
+                xmpp.removeAllListeners('stanza')
+                done()
+            }
+            socket.emit(
+                'xmpp.avatar.metadata',
+                request,
+                callback
+            )
+        })
+        
+        it('Errors if \'type\' key missing', function(done) {
+            var request = { bytes: 2345, id: '12345' }
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            var callback = function(error, success) {
+                should.not.exist(success)
+                error.type.should.equal('modify')
+                error.condition.should.equal('client-error')
+                error.description.should.equal("Missing 'type' key")
+                error.request.should.eql(request)
+                xmpp.removeAllListeners('stanza')
+                done()
+            }
+            socket.emit(
+                'xmpp.avatar.metadata',
+                request,
+                callback
+            )
+        })
+        
+        it('Sends expected minimal attribute stanza', function(done) {
+            var request = { 
+                bytes: 2345,
+                id: '12345',
+                type: 'image/png'
+            }
+            xmpp.once('stanza', function(stanza) {
+                stanza.is('iq').should.be.true
+                stanza.attrs.type.should.equal('set')
+                stanza.attrs.id.should.exist
+                var publish = stanza.getChild('pubsub', avatar.NS_PUBSUB)
+                    .getChild('publish')
+                publish.attrs.node.should.equal(avatar.NS_IMG)
+                var item = publish.getChild('item')
+                item.should.exist
+                item.attrs.id.should.equal(request.id)
+                var metadata = item.getChild('metadata', avatar.NS_META)
+                metadata.should.exist
+                var info = metadata.getChild('info')
+                info.attrs.id.should.equal(request.id)
+                info.attrs.bytes.should.eql(request.bytes)
+                info.attrs.type.should.equal(request.type)
+                done()
+            })
+            socket.emit(
+                'xmpp.avatar.metadata',
+                request,
+                function() {}
+            )
+        })
+        
+        it('Sends expected full stanza', function(done) {
+            var request = { 
+                bytes: 2345,
+                id: '12345',
+                type: 'image/png',
+                url: 'http://example.org/avatar.png',
+                width: 64,
+                height: 64
+            }
+            xmpp.once('stanza', function(stanza) {
+                stanza.is('iq').should.be.true
+
+                var info = stanza.getChild('pubsub', avatar.NS_PUBSUB)
+                    .getChild('publish')
+                    .getChild('item')
+                    .getChild('metadata', avatar.NS_META)
+                    .getChild('info')
+                info.attrs.url.should.equal(request.url)
+                info.attrs.width.should.eql(request.width)
+                info.attrs.height.should.eql(request.height)
+                done()
+            })
+            socket.emit(
+                'xmpp.avatar.metadata',
+                request,
+                function() {}
+            )
+        })
+        
+        it('Handes error response', function(done) {
+            xmpp.once('stanza', function(stanza) {
+                manager.makeCallback(helper.getStanza('iq-error'))
+            })
+            var callback = function(error, success) {
+                should.not.exist(success)
+                error.should.eql({
+                    type: 'cancel',
+                    condition: 'error-condition'
+                })
+                done()
+            }
+            var request = {
+                id: '12345',
+                type: 'image/png',
+                bytes: '2345'
+            }
+            socket.emit(
+                'xmpp.avatar.metadata',
+                request,
+                callback
+            )
+        })
+        
+        it('Returns expected data (not disabled)', function(done) {
+            xmpp.once('stanza', function(stanza) {
+                manager.makeCallback(helper.getStanza('iq-result'))
+            })
+            var callback = function(error, success) {
+                should.not.exist(error)
+                success.should.be.true
+                done()
+            }
+            var request = {
+                id: '12345',
+                type: 'image/png',
+                bytes: '2345'
+            }
+            socket.emit(
+                'xmpp.avatar.metadata',
+                request,
+                callback
+            )
+        })
+        
     })
 
 })
