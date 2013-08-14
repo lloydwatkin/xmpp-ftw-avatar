@@ -88,7 +88,8 @@ describe('Avatar', function() {
                 should.not.exist(success)
                 error.type.should.equal('modify')
                 error.condition.should.equal('client-error')
-                error.description.should.equal("Image content should be a string")
+                error.description
+                    .should.equal("Image content should be a string")
                 error.request.should.eql(request)
                 xmpp.removeAllListeners('stanza')
                 done()
@@ -100,6 +101,30 @@ describe('Avatar', function() {
             )
         })
 
+        it('If \'id\' key provided it must be a string', function(done) {
+            var request = {
+                content: 'some-image-data',
+                id: true
+            }
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            var callback = function(error, success) {
+                should.not.exist(success)
+                error.type.should.equal('modify')
+                error.condition.should.equal('client-error')
+                error.description.should.equal("Avatar id should be a string")
+                error.request.should.eql(request)
+                xmpp.removeAllListeners('stanza')
+                done()
+            }
+            socket.emit(
+                'xmpp.avatar.upload',
+                request,
+                callback
+            )          
+        })
+        
         it('Sends expected stanza', function(done) {
             var request = {
                 content: 'some-image-content'
@@ -125,6 +150,33 @@ describe('Avatar', function() {
                 function() {}
             )
         })
+        
+        it('Sends expected stanza with provided ID', function(done) {
+            var request = {
+                content: 'some-image-content',
+                id: '12345'
+            }
+            xmpp.once('stanza', function(stanza) {
+                stanza.is('iq').should.be.true
+                stanza.attrs.type.should.equal('set')
+                stanza.attrs.id.should.exist
+                var publish = stanza.getChild('pubsub', avatar.NS_PUBSUB)
+                    .getChild('publish')
+                publish.attrs.node.should.equal(avatar.NS_IMG)
+                var item = publish.getChild('item')
+                item.should.exist
+                item.attrs.id.should.equal(request.id)
+                var data = item.getChild('data', avatar.NS_IMG)
+                data.getText().should.equal(request.content)
+                done()
+            })
+            socket.emit(
+                'xmpp.avatar.upload',
+                request,
+                function() {}
+            )
+        })        
+        
 
         it('Handles error response', function(done) {
             xmpp.once('stanza', function(stanza) {
