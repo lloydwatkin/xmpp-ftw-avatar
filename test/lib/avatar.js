@@ -24,6 +24,82 @@ describe('Avatar', function() {
         avatar.init(manager)
     })
 
+    describe('Handles', function() {
+        
+        it('Returns false for non-message stanzas', function() {
+            avatar.handles(ltx.parse('<iq/>')).should.be.false
+        })
+        
+        it('Returns true for correct stanza', function() {
+            var stanza = '<message>'
+                + '<event xmlns="' + avatar.NS_EVENT + '">'
+                + '<items xmlns="' + avatar.NS_META + '">'
+                + '<item>'
+                + '<metadata xmlns="' + avatar.NS_META + '" />'
+                + '</item>'
+                + '</items>'
+                + '</event>'
+                + '</message>'
+            avatar.handles(ltx.parse(stanza)).should.be.true
+        })
+        
+    })
+    
+    describe('Handles incoming messages', function() {
+        
+        it('Handles requests to disable avatars', function(done) {
+            socket.once('xmpp.avatar.push.metadata', function(data) {
+                data.from.should.eql({
+                    domain: 'shakespeare.lit',
+                    user: 'romeo'
+                })
+                data.disabled.should.be.true
+                done()
+            })
+            var stanza = '<message from="romeo@shakespeare.lit">'
+                + '<event xmlns="' + avatar.NS_EVENT + '">'
+                + '<items xmlns="' + avatar.NS_META + '">'
+                + '<item>'
+                + '<metadata xmlns="' + avatar.NS_META + '" />'
+                + '</item>'
+                + '</items>'
+                + '</event>'
+                + '</message>'
+            avatar.handle(ltx.parse(stanza))
+        })
+        
+        it('Handles full metadata update', function(done) {
+            socket.once('xmpp.avatar.push.metadata', function(data) {
+                data.from.should.eql({
+                    domain: 'shakespeare.lit',
+                    user: 'romeo'
+                })
+                should.not.exist(data.disabled)
+                data.id.should.equal('12345abcdef')
+                data.bytes.should.equal('12345')
+                data.height.should.equal('64')
+                data.type.should.equal('image/png')
+                data.width.should.equal('64')
+                done()
+            })
+            var stanza = '<message from="romeo@shakespeare.lit">'
+                + '<event xmlns="' + avatar.NS_EVENT + '">'
+                + '<items xmlns="' + avatar.NS_META + '">'
+                + '<item id="12345abcdef">'
+                + '<metadata xmlns="' + avatar.NS_META + '">'
+                + '<info bytes="12345" '
+                +       'height="64" id="12345abcdef" '
+                +       'type="image/png" width="64"/>'
+                + '</metadata>'
+                + '</item>'
+                + '</items>'
+                + '</event>'
+                + '</message>'
+            avatar.handle(ltx.parse(stanza))
+        })    
+        
+    })
+    
     describe('Upload image data', function() {
 
         it('Errors if no callback provided', function(done) {
