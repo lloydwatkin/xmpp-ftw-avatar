@@ -82,6 +82,13 @@ describe('Avatar', function() {
                 data.avatars[0].height.should.equal('64')
                 data.avatars[0].type.should.equal('image/png')
                 data.avatars[0].width.should.equal('64')
+                
+                data.avatars[1].id.should.equal('54321fedcba')
+                data.avatars[1].bytes.should.equal('998')
+                data.avatars[1].type.should.equal('image/jpeg')   
+                data.avatars[1].url.should.equal('http://xmpp.org/avatar.jpg')
+                should.not.exist(data.avatars[1].width)
+                should.not.exist(data.avatars[1].height)
                 done()
             })
             var stanza = '<message from="romeo@shakespeare.lit">' +
@@ -93,8 +100,8 @@ describe('Avatar', function() {
                    'height="64" id="12345abcdef" ' +
                    'type="image/png" width="64"/>' +
                 '<info bytes="998" ' +
-                   'height="64" id="54321fedcba" ' +
-                   'type="image/jpg" width="64"/>' +
+                   'id="54321fedcba" ' +
+                   'type="image/jpeg" url="http://xmpp.org/avatar.jpg" />' +
                 '</metadata>' +
                 '</item>' +
                 '</items>' +
