@@ -31,15 +31,15 @@ describe('Avatar', function() {
         })
         
         it('Returns true for correct stanza', function() {
-            var stanza = '<message>'
-                + '<event xmlns="' + avatar.NS_EVENT + '">'
-                + '<items xmlns="' + avatar.NS_META + '">'
-                + '<item>'
-                + '<metadata xmlns="' + avatar.NS_META + '" />'
-                + '</item>'
-                + '</items>'
-                + '</event>'
-                + '</message>'
+            var stanza = '<message>' +
+                '<event xmlns="' + avatar.NS_EVENT + '">' +
+                '<items xmlns="' + avatar.NS_META + '">' +
+                '<item>' +
+                '<metadata xmlns="' + avatar.NS_META + '" />' +
+                '</item>' +
+                '</items>' +
+                '</event>' +
+                '</message>'
             avatar.handles(ltx.parse(stanza)).should.be.true
         })
         
@@ -56,15 +56,15 @@ describe('Avatar', function() {
                 data.disabled.should.be.true
                 done()
             })
-            var stanza = '<message from="romeo@shakespeare.lit">'
-                + '<event xmlns="' + avatar.NS_EVENT + '">'
-                + '<items xmlns="' + avatar.NS_META + '">'
-                + '<item>'
-                + '<metadata xmlns="' + avatar.NS_META + '" />'
-                + '</item>'
-                + '</items>'
-                + '</event>'
-                + '</message>'
+            var stanza = '<message from="romeo@shakespeare.lit">' +
+                '<event xmlns="' + avatar.NS_EVENT + '">' +
+                '<items xmlns="' + avatar.NS_META + '">' +
+                '<item>' +
+                '<metadata xmlns="' + avatar.NS_META + '" />' +
+                '</item>' +
+                '</items>' +
+                '</event>' +
+                '</message>'
             avatar.handle(ltx.parse(stanza))
         })
         
@@ -82,21 +82,21 @@ describe('Avatar', function() {
                 data.width.should.equal('64')
                 done()
             })
-            var stanza = '<message from="romeo@shakespeare.lit">'
-                + '<event xmlns="' + avatar.NS_EVENT + '">'
-                + '<items xmlns="' + avatar.NS_META + '">'
-                + '<item id="12345abcdef">'
-                + '<metadata xmlns="' + avatar.NS_META + '">'
-                + '<info bytes="12345" '
-                +       'height="64" id="12345abcdef" '
-                +       'type="image/png" width="64"/>'
-                + '</metadata>'
-                + '</item>'
-                + '</items>'
-                + '</event>'
-                + '</message>'
+            var stanza = '<message from="romeo@shakespeare.lit">' +
+                '<event xmlns="' + avatar.NS_EVENT + '">' +
+                '<items xmlns="' + avatar.NS_META + '">' +
+                '<item id="12345abcdef">' +
+                '<metadata xmlns="' + avatar.NS_META + '">' +
+                '<info bytes="12345" ' +
+                   'height="64" id="12345abcdef" ' +
+                   'type="image/png" width="64"/>' +
+                '</metadata>' +
+                '</item>' +
+                '</items>' +
+                '</event>' +
+                '</message>'
             avatar.handle(ltx.parse(stanza))
-        })    
+        })
         
     })
     
@@ -109,7 +109,7 @@ describe('Avatar', function() {
             socket.once('xmpp.error.client', function(error) {
                 error.type.should.equal('modify')
                 error.condition.should.equal('client-error')
-                error.description.should.equal("Missing callback")
+                error.description.should.equal('Missing callback')
                 error.request.should.eql({})
                 xmpp.removeAllListeners('stanza')
                 done()
@@ -124,7 +124,7 @@ describe('Avatar', function() {
             socket.once('xmpp.error.client', function(error) {
                 error.type.should.equal('modify')
                 error.condition.should.equal('client-error')
-                error.description.should.equal("Missing callback")
+                error.description.should.equal('Missing callback')
                 error.request.should.eql({})
                 xmpp.removeAllListeners('stanza')
                 done()
@@ -141,7 +141,7 @@ describe('Avatar', function() {
                 should.not.exist(success)
                 error.type.should.equal('modify')
                 error.condition.should.equal('client-error')
-                error.description.should.equal("Missing 'content' key")
+                error.description.should.equal('Missing \'content\' key')
                 error.request.should.eql(request)
                 xmpp.removeAllListeners('stanza')
                 done()
@@ -165,7 +165,7 @@ describe('Avatar', function() {
                 error.type.should.equal('modify')
                 error.condition.should.equal('client-error')
                 error.description
-                    .should.equal("Image content should be a string")
+                    .should.equal('Image content should be a string')
                 error.request.should.eql(request)
                 xmpp.removeAllListeners('stanza')
                 done()
@@ -189,7 +189,7 @@ describe('Avatar', function() {
                 should.not.exist(success)
                 error.type.should.equal('modify')
                 error.condition.should.equal('client-error')
-                error.description.should.equal("Avatar id should be a string")
+                error.description.should.equal('Avatar id should be a string')
                 error.request.should.eql(request)
                 xmpp.removeAllListeners('stanza')
                 done()
@@ -198,7 +198,7 @@ describe('Avatar', function() {
                 'xmpp.avatar.upload',
                 request,
                 callback
-            )          
+            )
         })
         
         it('Sends expected stanza', function(done) {
@@ -251,11 +251,11 @@ describe('Avatar', function() {
                 request,
                 function() {}
             )
-        })        
+        })
         
 
         it('Handles error response', function(done) {
-            xmpp.once('stanza', function(stanza) {
+            xmpp.once('stanza', function() {
                 manager.makeCallback(helper.getStanza('iq-error'))
             })
             var callback = function(error, success) {
@@ -277,7 +277,7 @@ describe('Avatar', function() {
         })
 
         it('Returns expected data', function(done) {
-            xmpp.once('stanza', function(stanza) {
+            xmpp.once('stanza', function() {
                 manager.makeCallback(helper.getStanza('iq-result'))
             })
             var sha1 = '02bf50f9f139284d578c03a8625d9ff561735e4f'
@@ -309,7 +309,7 @@ describe('Avatar', function() {
             socket.once('xmpp.error.client', function(error) {
                 error.type.should.equal('modify')
                 error.condition.should.equal('client-error')
-                error.description.should.equal("Missing callback")
+                error.description.should.equal('Missing callback')
                 error.request.should.eql({})
                 xmpp.removeAllListeners('stanza')
                 done()
@@ -324,7 +324,7 @@ describe('Avatar', function() {
             socket.once('xmpp.error.client', function(error) {
                 error.type.should.equal('modify')
                 error.condition.should.equal('client-error')
-                error.description.should.equal("Missing callback")
+                error.description.should.equal('Missing callback')
                 error.request.should.eql({})
                 xmpp.removeAllListeners('stanza')
                 done()
@@ -352,7 +352,7 @@ describe('Avatar', function() {
             socket.emit(
                 'xmpp.avatar.metadata',
                 request,
-                function(error, success) { 
+                function(error, success) {
                     should.not.exist(error)
                     success.should.be.true
                     done()
@@ -369,7 +369,7 @@ describe('Avatar', function() {
                 should.not.exist(success)
                 error.type.should.equal('modify')
                 error.condition.should.equal('client-error')
-                error.description.should.equal("Missing 'bytes' key")
+                error.description.should.equal('Missing \'bytes\' key')
                 error.request.should.eql(request)
                 xmpp.removeAllListeners('stanza')
                 done()
@@ -390,7 +390,7 @@ describe('Avatar', function() {
                 should.not.exist(success)
                 error.type.should.equal('modify')
                 error.condition.should.equal('client-error')
-                error.description.should.equal("Missing 'id' key")
+                error.description.should.equal('Missing \'id\' key')
                 error.request.should.eql(request)
                 xmpp.removeAllListeners('stanza')
                 done()
@@ -411,7 +411,7 @@ describe('Avatar', function() {
                 should.not.exist(success)
                 error.type.should.equal('modify')
                 error.condition.should.equal('client-error')
-                error.description.should.equal("Missing 'type' key")
+                error.description.should.equal('Missing \'type\' key')
                 error.request.should.eql(request)
                 xmpp.removeAllListeners('stanza')
                 done()
@@ -424,7 +424,7 @@ describe('Avatar', function() {
         })
         
         it('Sends expected minimal attribute stanza', function(done) {
-            var request = { 
+            var request = {
                 bytes: 2345,
                 id: '12345',
                 type: 'image/png'
@@ -455,7 +455,7 @@ describe('Avatar', function() {
         })
         
         it('Sends expected full stanza', function(done) {
-            var request = { 
+            var request = {
                 bytes: 2345,
                 id: '12345',
                 type: 'image/png',
@@ -484,7 +484,7 @@ describe('Avatar', function() {
         })
         
         it('Handes error response', function(done) {
-            xmpp.once('stanza', function(stanza) {
+            xmpp.once('stanza', function() {
                 manager.makeCallback(helper.getStanza('iq-error'))
             })
             var callback = function(error, success) {
@@ -508,7 +508,7 @@ describe('Avatar', function() {
         })
         
         it('Returns expected data (not disabled)', function(done) {
-            xmpp.once('stanza', function(stanza) {
+            xmpp.once('stanza', function() {
                 manager.makeCallback(helper.getStanza('iq-result'))
             })
             var callback = function(error, success) {
