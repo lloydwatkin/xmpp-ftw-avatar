@@ -75,11 +75,13 @@ describe('Avatar', function() {
                     user: 'romeo'
                 })
                 should.not.exist(data.disabled)
-                data.id.should.equal('12345abcdef')
-                data.bytes.should.equal('12345')
-                data.height.should.equal('64')
-                data.type.should.equal('image/png')
-                data.width.should.equal('64')
+                
+                data.avatars.length.should.equal(2)
+                data.avatars[0].id.should.equal('12345abcdef')
+                data.avatars[0].bytes.should.equal('12345')
+                data.avatars[0].height.should.equal('64')
+                data.avatars[0].type.should.equal('image/png')
+                data.avatars[0].width.should.equal('64')
                 done()
             })
             var stanza = '<message from="romeo@shakespeare.lit">' +
@@ -90,6 +92,9 @@ describe('Avatar', function() {
                 '<info bytes="12345" ' +
                    'height="64" id="12345abcdef" ' +
                    'type="image/png" width="64"/>' +
+                '<info bytes="998" ' +
+                   'height="64" id="54321fedcba" ' +
+                   'type="image/jpg" width="64"/>' +
                 '</metadata>' +
                 '</item>' +
                 '</items>' +
