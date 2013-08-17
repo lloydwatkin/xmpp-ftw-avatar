@@ -675,4 +675,91 @@ describe('Avatar', function() {
         
     })
 
+    /* As this functionality proxies through to xmpp-ftw-pubsub
+     * only functionality caused by this call needs to be tested
+     */
+    describe('Subscribe to updates', function() {
+        
+        it('Errors if \'of\' key missing', function(done) {
+            var request = {}
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            var callback = function(error, success) {
+                should.not.exist(success)
+                error.type.should.equal('modify')
+                error.condition.should.equal('client-error')
+                error.description.should.equal('Missing \'of\' key')
+                error.request.should.eql(request)
+                xmpp.removeAllListeners('stanza')
+                done()
+            }
+            socket.emit(
+                'xmpp.avatar.subscribe',
+                request,
+                callback
+            )
+        })
+        
+        it('Sends expected stanza', function(done) {
+            var request = { of: 'juliet@shakespare.lit' }
+            xmpp.once('stanza', function(stanza) {
+                stanza.attrs.to.should.equal(request.of)
+                stanza.getChild('pubsub')
+                    .getChild('subscribe')
+                    .attrs.node
+                    .should.equal(avatar.NS_META)
+                done()
+            })
+            socket.emit(
+                'xmpp.avatar.subscribe',
+                request,
+                function() {}
+            )
+        })
+        
+    })
+
+    describe('Unubscribe from updates', function() {
+        
+        it('Errors if \'of\' key missing', function(done) {
+            var request = {}
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            var callback = function(error, success) {
+                should.not.exist(success)
+                error.type.should.equal('modify')
+                error.condition.should.equal('client-error')
+                error.description.should.equal('Missing \'of\' key')
+                error.request.should.eql(request)
+                xmpp.removeAllListeners('stanza')
+                done()
+            }
+            socket.emit(
+                'xmpp.avatar.unsubscribe',
+                request,
+                callback
+            )
+        })
+        
+        it('Sends expected stanza', function(done) {
+            var request = { of: 'juliet@shakespare.lit' }
+            xmpp.once('stanza', function(stanza) {
+                stanza.attrs.to.should.equal(request.of)
+                stanza.getChild('pubsub')
+                    .getChild('unsubscribe')
+                    .attrs.node
+                    .should.equal(avatar.NS_META)
+                done()
+            })
+            socket.emit(
+                'xmpp.avatar.unsubscribe',
+                request,
+                function() {}
+            )  
+        })
+        
+    })
+    
 })
