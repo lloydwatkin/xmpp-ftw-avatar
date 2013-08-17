@@ -529,5 +529,150 @@ describe('Avatar', function() {
         })
         
     })
+    
+    describe('Retrieve avatar data', function() {
+
+        it('Errors if no callback provided', function(done) {
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            socket.once('xmpp.error.client', function(error) {
+                error.type.should.equal('modify')
+                error.condition.should.equal('client-error')
+                error.description.should.equal('Missing callback')
+                error.request.should.eql({})
+                xmpp.removeAllListeners('stanza')
+                done()
+            })
+            socket.emit('xmpp.avatar.data', {})
+        })
+
+        it('Errors if non-function callback provided', function(done) {
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            socket.once('xmpp.error.client', function(error) {
+                error.type.should.equal('modify')
+                error.condition.should.equal('client-error')
+                error.description.should.equal('Missing callback')
+                error.request.should.eql({})
+                xmpp.removeAllListeners('stanza')
+                done()
+            })
+            socket.emit('xmpp.avatar.data', {}, true)
+        })
+        
+        it('Errors if \'of\' key missing', function(done) {
+            var request = {}
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            var callback = function(error, success) {
+                should.not.exist(success)
+                error.type.should.equal('modify')
+                error.condition.should.equal('client-error')
+                error.description.should.equal('Missing \'of\' key')
+                error.request.should.eql(request)
+                xmpp.removeAllListeners('stanza')
+                done()
+            }
+            socket.emit(
+                'xmpp.avatar.data',
+                request,
+                callback
+            )
+        })
+        
+        it('Errors if \'id\' key is missing', function(done) {
+            var request = { of: 'juliet@shakespeare.lit' }
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            var callback = function(error, success) {
+                should.not.exist(success)
+                error.type.should.equal('modify')
+                error.condition.should.equal('client-error')
+                error.description.should.equal('Missing \'id\' key')
+                error.request.should.eql(request)
+                xmpp.removeAllListeners('stanza')
+                done()
+            }
+            socket.emit(
+                'xmpp.avatar.data',
+                request,
+                callback
+            )
+        })
+        
+        it('Sends expected stanza', function(done) {
+            var request = {
+                of: 'juliet@shakespeare.lit',
+                id: '123456abcdef'
+            }
+            xmpp.once('stanza', function(stanza) {
+                stanza.is('iq').should.be.true
+                stanza.attrs.to.should.equal(request.of)
+                stanza.attrs.type.should.equal('get')
+                stanza.attrs.id.should.exist
+                
+                var items = stanza.getChild('pubsub', avatar.NS_PUBSUB)
+                    .getChild('items')
+                items.attrs.node.should.equal(avatar.NS_DATA)
+                items.getChild('item').attrs.id.should.equal(request.id)
+                done()
+            })
+            socket.emit(
+                'xmpp.avatar.data',
+                request,
+                function() {}
+            )
+        })
+        
+        it('Handles error response', function(done) {
+            xmpp.once('stanza', function() {
+                manager.makeCallback(helper.getStanza('iq-error'))
+            })
+            var callback = function(error, success) {
+                should.not.exist(success)
+                error.should.eql({
+                    type: 'cancel',
+                    condition: 'error-condition'
+                })
+                done()
+            }
+            var request = {
+                id: '123456abcdef',
+                of: 'juliet@shakespeare.lit'
+            }
+            socket.emit(
+                'xmpp.avatar.data',
+                request,
+                callback
+            )
+        })
+        
+        it('Returns expected data', function(done) {
+            xmpp.once('stanza', function() {
+                manager.makeCallback(helper.getStanza('avatar-data'))
+            })
+            var callback = function(error, success) {
+                should.not.exist(error)
+                success.should.eql({
+                    content: 'some-image-data'
+                })
+                done()
+            }
+            var request = {
+                id: '123456abcdef',
+                of: 'juliet@shakespeare.lit'
+            }
+            socket.emit(
+                'xmpp.avatar.data',
+                request,
+                callback
+            )
+        })
+        
+    })
 
 })
