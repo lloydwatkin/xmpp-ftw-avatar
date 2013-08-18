@@ -85,7 +85,7 @@ describe('Avatar', function() {
                 
                 data.avatars[1].id.should.equal('54321fedcba')
                 data.avatars[1].bytes.should.equal('998')
-                data.avatars[1].type.should.equal('image/jpeg')   
+                data.avatars[1].type.should.equal('image/jpeg')
                 data.avatars[1].url.should.equal('http://xmpp.org/avatar.jpg')
                 should.not.exist(data.avatars[1].width)
                 should.not.exist(data.avatars[1].height)
@@ -265,7 +265,6 @@ describe('Avatar', function() {
             )
         })
         
-
         it('Handles error response', function(done) {
             xmpp.once('stanza', function() {
                 manager.makeCallback(helper.getStanza('iq-error'))
@@ -540,6 +539,217 @@ describe('Avatar', function() {
             )
         })
         
+        it('Errors if \'additional\' key not array', function(done) {
+            var request = {
+                id: '12345abcdef',
+                type: 'image/png',
+                bytes: 1234,
+                additional: true
+            }
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            var callback = function(error, success) {
+                should.not.exist(success)
+                error.type.should.equal('modify')
+                error.condition.should.equal('client-error')
+                error.description.should.equal('Additional must be an array')
+                error.request.should.eql(request)
+                xmpp.removeAllListeners('stanza')
+                done()
+            }
+            socket.emit(
+                'xmpp.avatar.metadata',
+                request,
+                callback
+            )
+        })
+        
+        it('Errors if additional missing \'id\' key', function(done) {
+            var request = {
+                id: '12345abcdef',
+                type: 'image/png',
+                bytes: 1234,
+                additional: [ {} ]
+            }
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            var callback = function(error, success) {
+                should.not.exist(success)
+                error.type.should.equal('modify')
+                error.condition.should.equal('client-error')
+                error.description
+                    .should.equal('Missing \'id\' key in additional')
+                error.request.should.eql(request)
+                xmpp.removeAllListeners('stanza')
+                done()
+            }
+            socket.emit(
+                'xmpp.avatar.metadata',
+                request,
+                callback
+            )
+        })
+        
+        it('Errors if additional missing \'url\' key', function(done) {
+            var request = {
+                id: '12345abcdef',
+                type: 'image/png',
+                bytes: 1234,
+                additional: [
+                    {
+                        id: '54321fedcba'
+                    }
+                ]
+            }
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            var callback = function(error, success) {
+                should.not.exist(success)
+                error.type.should.equal('modify')
+                error.condition.should.equal('client-error')
+                error.description
+                    .should.equal('Missing \'url\' key in additional')
+                error.request.should.eql(request)
+                xmpp.removeAllListeners('stanza')
+                done()
+            }
+            socket.emit(
+                'xmpp.avatar.metadata',
+                request,
+                callback
+            )
+        })
+        
+        it('Errors if additional missing \'bytes\' key', function(done) {
+            var request = {
+                id: '12345abcdef',
+                type: 'image/png',
+                bytes: 1234,
+                additional: [
+                    {
+                        id: '54321fedcba',
+                        url: 'http://shakespeare.lit/romeo.jpg'
+                    }
+                ]
+            }
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            var callback = function(error, success) {
+                should.not.exist(success)
+                error.type.should.equal('modify')
+                error.condition.should.equal('client-error')
+                error.description
+                    .should.equal('Missing \'bytes\' key in additional')
+                error.request.should.eql(request)
+                xmpp.removeAllListeners('stanza')
+                done()
+            }
+            socket.emit(
+                'xmpp.avatar.metadata',
+                request,
+                callback
+            )
+        })
+        
+        it('Errors if additional missing \'type\' key', function(done) {
+            var request = {
+                id: '12345abcdef',
+                type: 'image/png',
+                bytes: 1234,
+                additional: [
+                    {
+                        id: '54321fedcba',
+                        url: 'http://shakespeare.lit/romeo.jpg',
+                        bytes: 998
+                    }
+                ]
+            }
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            var callback = function(error, success) {
+                should.not.exist(success)
+                error.type.should.equal('modify')
+                error.condition.should.equal('client-error')
+                error.description
+                    .should.equal('Missing \'type\' key in additional')
+                error.request.should.eql(request)
+                xmpp.removeAllListeners('stanza')
+                done()
+            }
+            socket.emit(
+                'xmpp.avatar.metadata',
+                request,
+                callback
+            )
+        })
+                
+        it('Sends expected stanza with additionals', function(done) {
+            var request = {
+                id: '12345abcdef',
+                type: 'image/png',
+                bytes: 1234,
+                additional: [
+                    {
+                        id: '54321fedcba',
+                        url: 'http://shakespeare.lit/romeo.jpg',
+                        bytes: 998,
+                        type: 'image/jpeg'
+                    },
+                    {
+                        id: '98765zyxvwu',
+                        url: 'http://shakespeare.lit/romeo.gif',
+                        bytes: 1444,
+                        type: 'image/gif',
+                        height: 64,
+                        width: 64
+                    }
+                ]
+            }
+            xmpp.once('stanza', function(stanza) {
+                var item = stanza.getChild('pubsub', avatar.NS_PUBSUB)
+                    .getChild('publish')
+                    .getChild('item')
+                
+                item.attrs.id.should.equal(request.id)
+                
+                var metadata = item.getChild('metadata', avatar.NS_META)
+                metadata.children.length.should.equal(3)
+                
+                var info = metadata.children[0]
+                info.attrs.type.should.equal(request.type)
+                info.attrs.bytes.should.eql(request.bytes)
+                info.attrs.id.should.equal(request.id)
+                
+                info = metadata.children[1]
+                info.attrs.id.should.equal(request.additional[0].id)
+                info.attrs.url.should.equal(request.additional[0].url)
+                info.attrs.bytes.should.eql(request.additional[0].bytes)
+                info.attrs.type.should.equal(request.additional[0].type)
+                should.not.exist(info.attrs.height)
+                should.not.exist(info.attrs.width)
+                
+                info = metadata.children[2]
+                info.attrs.id.should.equal(request.additional[1].id)
+                info.attrs.url.should.equal(request.additional[1].url)
+                info.attrs.bytes.should.eql(request.additional[1].bytes)
+                info.attrs.type.should.equal(request.additional[1].type)
+                info.attrs.height.should.equal(request.additional[1].height)
+                info.attrs.width.should.equal(request.additional[1].width)
+                
+                done()
+            })
+            socket.emit(
+                'xmpp.avatar.metadata',
+                request,
+                function() {}
+            )
+        })
+        
     })
     
     describe('Retrieve avatar data', function() {
@@ -769,7 +979,7 @@ describe('Avatar', function() {
                 'xmpp.avatar.unsubscribe',
                 request,
                 function() {}
-            )  
+            )
         })
         
     })
