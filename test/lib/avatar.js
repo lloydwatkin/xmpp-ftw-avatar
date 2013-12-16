@@ -1,5 +1,5 @@
 var should = require('should')
-  , Avatar = require('../../lib/avatar')
+  , Avatar = require('../../index')
   , ltx    = require('ltx')
   , helper = require('../helper')
 
@@ -25,11 +25,11 @@ describe('Avatar', function() {
     })
 
     describe('Handles', function() {
-        
+
         it('Returns false for non-message stanzas', function() {
             avatar.handles(ltx.parse('<iq/>')).should.be.false
         })
-        
+
         it('Returns true for correct stanza', function() {
             var stanza = '<message>' +
                 '<event xmlns="' + avatar.NS_EVENT + '">' +
@@ -42,11 +42,11 @@ describe('Avatar', function() {
                 '</message>'
             avatar.handles(ltx.parse(stanza)).should.be.true
         })
-        
+
     })
-    
+
     describe('Handles incoming messages', function() {
-        
+
         it('Handles requests to disable avatars', function(done) {
             socket.once('xmpp.avatar.push.metadata', function(data) {
                 data.from.should.eql({
@@ -67,7 +67,7 @@ describe('Avatar', function() {
                 '</message>'
             avatar.handle(ltx.parse(stanza))
         })
-        
+
         it('Handles full metadata update', function(done) {
             socket.once('xmpp.avatar.push.metadata', function(data) {
                 data.from.should.eql({
@@ -75,14 +75,14 @@ describe('Avatar', function() {
                     user: 'romeo'
                 })
                 should.not.exist(data.disabled)
-                
+
                 data.avatars.length.should.equal(2)
                 data.avatars[0].id.should.equal('12345abcdef')
                 data.avatars[0].bytes.should.equal('12345')
                 data.avatars[0].height.should.equal('64')
                 data.avatars[0].type.should.equal('image/png')
                 data.avatars[0].width.should.equal('64')
-                
+
                 data.avatars[1].id.should.equal('54321fedcba')
                 data.avatars[1].bytes.should.equal('998')
                 data.avatars[1].type.should.equal('image/jpeg')
@@ -109,9 +109,9 @@ describe('Avatar', function() {
                 '</message>'
             avatar.handle(ltx.parse(stanza))
         })
-        
+
     })
-    
+
     describe('Upload image data', function() {
 
         it('Errors if no callback provided', function(done) {
@@ -212,7 +212,7 @@ describe('Avatar', function() {
                 callback
             )
         })
-        
+
         it('Sends expected stanza', function(done) {
             var request = {
                 content: 'some-image-content'
@@ -238,7 +238,7 @@ describe('Avatar', function() {
                 function() {}
             )
         })
-        
+
         it('Sends expected stanza with provided ID', function(done) {
             var request = {
                 content: 'some-image-content',
@@ -264,7 +264,7 @@ describe('Avatar', function() {
                 function() {}
             )
         })
-        
+
         it('Handles error response', function(done) {
             xmpp.once('stanza', function() {
                 manager.makeCallback(helper.getStanza('iq-error'))
@@ -310,7 +310,7 @@ describe('Avatar', function() {
         })
 
     })
-    
+
     describe('Set meta data', function() {
 
         it('Errors if no callback provided', function(done) {
@@ -342,7 +342,7 @@ describe('Avatar', function() {
             })
             socket.emit('xmpp.avatar.metadata', {}, true)
         })
-        
+
         it('Allows disabling of metadata publishing', function(done) {
             var request = { disable: true }
             xmpp.once('stanza', function(stanza) {
@@ -370,7 +370,7 @@ describe('Avatar', function() {
                 }
             )
         })
-        
+
         it('Errors if \'bytes\' key missing', function(done) {
             var request = {}
             xmpp.once('stanza', function() {
@@ -391,7 +391,7 @@ describe('Avatar', function() {
                 callback
             )
         })
-        
+
         it('Errors if \'id\' key missing', function(done) {
             var request = { bytes: 2345 }
             xmpp.once('stanza', function() {
@@ -412,7 +412,7 @@ describe('Avatar', function() {
                 callback
             )
         })
-        
+
         it('Errors if \'type\' key missing', function(done) {
             var request = { bytes: 2345, id: '12345' }
             xmpp.once('stanza', function() {
@@ -433,7 +433,7 @@ describe('Avatar', function() {
                 callback
             )
         })
-        
+
         it('Sends expected minimal attribute stanza', function(done) {
             var request = {
                 bytes: 2345,
@@ -464,7 +464,7 @@ describe('Avatar', function() {
                 function() {}
             )
         })
-        
+
         it('Sends expected full stanza', function(done) {
             var request = {
                 bytes: 2345,
@@ -493,7 +493,7 @@ describe('Avatar', function() {
                 function() {}
             )
         })
-        
+
         it('Handes error response', function(done) {
             xmpp.once('stanza', function() {
                 manager.makeCallback(helper.getStanza('iq-error'))
@@ -517,7 +517,7 @@ describe('Avatar', function() {
                 callback
             )
         })
-        
+
         it('Returns expected data (not disabled)', function(done) {
             xmpp.once('stanza', function() {
                 manager.makeCallback(helper.getStanza('iq-result'))
@@ -538,7 +538,7 @@ describe('Avatar', function() {
                 callback
             )
         })
-        
+
         it('Errors if \'additional\' key not array', function(done) {
             var request = {
                 id: '12345abcdef',
@@ -564,7 +564,7 @@ describe('Avatar', function() {
                 callback
             )
         })
-        
+
         it('Errors if additional missing \'id\' key', function(done) {
             var request = {
                 id: '12345abcdef',
@@ -591,7 +591,7 @@ describe('Avatar', function() {
                 callback
             )
         })
-        
+
         it('Errors if additional missing \'url\' key', function(done) {
             var request = {
                 id: '12345abcdef',
@@ -622,7 +622,7 @@ describe('Avatar', function() {
                 callback
             )
         })
-        
+
         it('Errors if additional missing \'bytes\' key', function(done) {
             var request = {
                 id: '12345abcdef',
@@ -654,7 +654,7 @@ describe('Avatar', function() {
                 callback
             )
         })
-        
+
         it('Errors if additional missing \'type\' key', function(done) {
             var request = {
                 id: '12345abcdef',
@@ -687,7 +687,7 @@ describe('Avatar', function() {
                 callback
             )
         })
-                
+
         it('Sends expected stanza with additionals', function(done) {
             var request = {
                 id: '12345abcdef',
@@ -714,17 +714,17 @@ describe('Avatar', function() {
                 var item = stanza.getChild('pubsub', avatar.NS_PUBSUB)
                     .getChild('publish')
                     .getChild('item')
-                
+
                 item.attrs.id.should.equal(request.id)
-                
+
                 var metadata = item.getChild('metadata', avatar.NS_META)
                 metadata.children.length.should.equal(3)
-                
+
                 var info = metadata.children[0]
                 info.attrs.type.should.equal(request.type)
                 info.attrs.bytes.should.eql(request.bytes)
                 info.attrs.id.should.equal(request.id)
-                
+
                 info = metadata.children[1]
                 info.attrs.id.should.equal(request.additional[0].id)
                 info.attrs.url.should.equal(request.additional[0].url)
@@ -732,7 +732,7 @@ describe('Avatar', function() {
                 info.attrs.type.should.equal(request.additional[0].type)
                 should.not.exist(info.attrs.height)
                 should.not.exist(info.attrs.width)
-                
+
                 info = metadata.children[2]
                 info.attrs.id.should.equal(request.additional[1].id)
                 info.attrs.url.should.equal(request.additional[1].url)
@@ -740,7 +740,7 @@ describe('Avatar', function() {
                 info.attrs.type.should.equal(request.additional[1].type)
                 info.attrs.height.should.equal(request.additional[1].height)
                 info.attrs.width.should.equal(request.additional[1].width)
-                
+
                 done()
             })
             socket.emit(
@@ -749,9 +749,9 @@ describe('Avatar', function() {
                 function() {}
             )
         })
-        
+
     })
-    
+
     describe('Retrieve avatar data', function() {
 
         it('Errors if no callback provided', function(done) {
@@ -783,7 +783,7 @@ describe('Avatar', function() {
             })
             socket.emit('xmpp.avatar.data', {}, true)
         })
-        
+
         it('Errors if \'of\' key missing', function(done) {
             var request = {}
             xmpp.once('stanza', function() {
@@ -804,7 +804,7 @@ describe('Avatar', function() {
                 callback
             )
         })
-        
+
         it('Errors if \'id\' key is missing', function(done) {
             var request = { of: 'juliet@shakespeare.lit' }
             xmpp.once('stanza', function() {
@@ -825,7 +825,7 @@ describe('Avatar', function() {
                 callback
             )
         })
-        
+
         it('Sends expected stanza', function(done) {
             var request = {
                 of: 'juliet@shakespeare.lit',
@@ -836,7 +836,7 @@ describe('Avatar', function() {
                 stanza.attrs.to.should.equal(request.of)
                 stanza.attrs.type.should.equal('get')
                 stanza.attrs.id.should.exist
-                
+
                 var items = stanza.getChild('pubsub', avatar.NS_PUBSUB)
                     .getChild('items')
                 items.attrs.node.should.equal(avatar.NS_DATA)
@@ -849,7 +849,7 @@ describe('Avatar', function() {
                 function() {}
             )
         })
-        
+
         it('Handles error response', function(done) {
             xmpp.once('stanza', function() {
                 manager.makeCallback(helper.getStanza('iq-error'))
@@ -872,7 +872,7 @@ describe('Avatar', function() {
                 callback
             )
         })
-        
+
         it('Returns expected data', function(done) {
             xmpp.once('stanza', function() {
                 manager.makeCallback(helper.getStanza('avatar-data'))
@@ -894,14 +894,14 @@ describe('Avatar', function() {
                 callback
             )
         })
-        
+
     })
 
     /* As this functionality proxies through to xmpp-ftw-pubsub
      * only functionality caused by this call needs to be tested
      */
     describe('Subscribe to updates', function() {
-        
+
         it('Errors if \'of\' key missing', function(done) {
             var request = {}
             xmpp.once('stanza', function() {
@@ -922,7 +922,7 @@ describe('Avatar', function() {
                 callback
             )
         })
-        
+
         it('Sends expected stanza', function(done) {
             var request = { of: 'juliet@shakespare.lit' }
             xmpp.once('stanza', function(stanza) {
@@ -939,11 +939,11 @@ describe('Avatar', function() {
                 function() {}
             )
         })
-        
+
     })
 
     describe('Unubscribe from updates', function() {
-        
+
         it('Errors if \'of\' key missing', function(done) {
             var request = {}
             xmpp.once('stanza', function() {
@@ -964,7 +964,7 @@ describe('Avatar', function() {
                 callback
             )
         })
-        
+
         it('Sends expected stanza', function(done) {
             var request = { of: 'juliet@shakespare.lit' }
             xmpp.once('stanza', function(stanza) {
@@ -981,7 +981,7 @@ describe('Avatar', function() {
                 function() {}
             )
         })
-        
+
     })
-    
+
 })
