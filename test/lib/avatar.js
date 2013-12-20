@@ -1,8 +1,11 @@
+'use strict';
+
 var should = require('should')
   , Avatar = require('../../index')
   , ltx    = require('ltx')
   , helper = require('../helper')
 
+/* jshint -W030 */
 describe('Avatar', function() {
 
     var avatar, socket, xmpp, manager
@@ -688,6 +691,13 @@ describe('Avatar', function() {
             )
         })
 
+        var checkMetaData = function(request, info) {
+            info.attrs.id.should.equal(request.id)
+            info.attrs.url.should.equal(request.url)
+            info.attrs.bytes.should.eql(request.bytes)
+            info.attrs.type.should.equal(request.type)
+        }
+
         it('Sends expected stanza with additionals', function(done) {
             var request = {
                 id: '12345abcdef',
@@ -726,18 +736,12 @@ describe('Avatar', function() {
                 info.attrs.id.should.equal(request.id)
 
                 info = metadata.children[1]
-                info.attrs.id.should.equal(request.additional[0].id)
-                info.attrs.url.should.equal(request.additional[0].url)
-                info.attrs.bytes.should.eql(request.additional[0].bytes)
-                info.attrs.type.should.equal(request.additional[0].type)
+                checkMetaData(request.additional[0], info)
                 should.not.exist(info.attrs.height)
                 should.not.exist(info.attrs.width)
 
                 info = metadata.children[2]
-                info.attrs.id.should.equal(request.additional[1].id)
-                info.attrs.url.should.equal(request.additional[1].url)
-                info.attrs.bytes.should.eql(request.additional[1].bytes)
-                info.attrs.type.should.equal(request.additional[1].type)
+                checkMetaData(request.additional[1], info)
                 info.attrs.height.should.equal(request.additional[1].height)
                 info.attrs.width.should.equal(request.additional[1].width)
 
