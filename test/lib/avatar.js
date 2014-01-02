@@ -11,8 +11,8 @@ describe('Avatar', function() {
     var avatar, socket, xmpp, manager
 
     before(function() {
-        socket = new helper.Eventer()
-        xmpp = new helper.Eventer()
+        socket = new helper.SocketEventer()
+        xmpp = new helper.XmppEventer()
         manager = {
             socket: socket,
             client: xmpp,
@@ -129,7 +129,7 @@ describe('Avatar', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             })
-            socket.emit('xmpp.avatar.upload', {})
+            socket.send('xmpp.avatar.upload', {})
         })
 
         it('Errors if non-function callback provided', function(done) {
@@ -144,7 +144,7 @@ describe('Avatar', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             })
-            socket.emit('xmpp.avatar.upload', {}, true)
+            socket.send('xmpp.avatar.upload', {}, true)
         })
 
         it('Errors if no content key provided', function(done) {
@@ -161,7 +161,7 @@ describe('Avatar', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             }
-            socket.emit(
+            socket.send(
                 'xmpp.avatar.upload',
                 request,
                 callback
@@ -185,7 +185,7 @@ describe('Avatar', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             }
-            socket.emit(
+            socket.send(
                 'xmpp.avatar.upload',
                 request,
                 callback
@@ -209,7 +209,7 @@ describe('Avatar', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             }
-            socket.emit(
+            socket.send(
                 'xmpp.avatar.upload',
                 request,
                 callback
@@ -235,7 +235,7 @@ describe('Avatar', function() {
                 data.getText().should.equal(request.content)
                 done()
             })
-            socket.emit(
+            socket.send(
                 'xmpp.avatar.upload',
                 request,
                 function() {}
@@ -261,7 +261,7 @@ describe('Avatar', function() {
                 data.getText().should.equal(request.content)
                 done()
             })
-            socket.emit(
+            socket.send(
                 'xmpp.avatar.upload',
                 request,
                 function() {}
@@ -283,7 +283,7 @@ describe('Avatar', function() {
             var request = {
                 content: 'some-image-content'
             }
-            socket.emit(
+            socket.send(
                 'xmpp.avatar.upload',
                 request,
                 callback
@@ -305,7 +305,7 @@ describe('Avatar', function() {
             var request = {
                 content: 'some-image-content'
             }
-            socket.emit(
+            socket.send(
                 'xmpp.avatar.upload',
                 request,
                 callback
@@ -328,7 +328,7 @@ describe('Avatar', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             })
-            socket.emit('xmpp.avatar.metadata', {})
+            socket.send('xmpp.avatar.metadata', {})
         })
 
         it('Errors if non-function callback provided', function(done) {
@@ -343,7 +343,7 @@ describe('Avatar', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             })
-            socket.emit('xmpp.avatar.metadata', {}, true)
+            socket.send('xmpp.avatar.metadata', {}, true)
         })
 
         it('Allows disabling of metadata publishing', function(done) {
@@ -363,7 +363,7 @@ describe('Avatar', function() {
                 metadata.attrs.should.eql({ xmlns: 'urn:xmpp:avatar:metadata' })
                 manager.makeCallback(helper.getStanza('iq-result'))
             })
-            socket.emit(
+            socket.send(
                 'xmpp.avatar.metadata',
                 request,
                 function(error, success) {
@@ -388,7 +388,7 @@ describe('Avatar', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             }
-            socket.emit(
+            socket.send(
                 'xmpp.avatar.metadata',
                 request,
                 callback
@@ -409,7 +409,7 @@ describe('Avatar', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             }
-            socket.emit(
+            socket.send(
                 'xmpp.avatar.metadata',
                 request,
                 callback
@@ -430,7 +430,7 @@ describe('Avatar', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             }
-            socket.emit(
+            socket.send(
                 'xmpp.avatar.metadata',
                 request,
                 callback
@@ -461,7 +461,7 @@ describe('Avatar', function() {
                 info.attrs.type.should.equal(request.type)
                 done()
             })
-            socket.emit(
+            socket.send(
                 'xmpp.avatar.metadata',
                 request,
                 function() {}
@@ -490,7 +490,7 @@ describe('Avatar', function() {
                 info.attrs.height.should.eql(request.height)
                 done()
             })
-            socket.emit(
+            socket.send(
                 'xmpp.avatar.metadata',
                 request,
                 function() {}
@@ -514,7 +514,7 @@ describe('Avatar', function() {
                 type: 'image/png',
                 bytes: '2345'
             }
-            socket.emit(
+            socket.send(
                 'xmpp.avatar.metadata',
                 request,
                 callback
@@ -535,7 +535,7 @@ describe('Avatar', function() {
                 type: 'image/png',
                 bytes: '2345'
             }
-            socket.emit(
+            socket.send(
                 'xmpp.avatar.metadata',
                 request,
                 callback
@@ -561,7 +561,7 @@ describe('Avatar', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             }
-            socket.emit(
+            socket.send(
                 'xmpp.avatar.metadata',
                 request,
                 callback
@@ -588,7 +588,7 @@ describe('Avatar', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             }
-            socket.emit(
+            socket.send(
                 'xmpp.avatar.metadata',
                 request,
                 callback
@@ -619,7 +619,7 @@ describe('Avatar', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             }
-            socket.emit(
+            socket.send(
                 'xmpp.avatar.metadata',
                 request,
                 callback
@@ -651,7 +651,7 @@ describe('Avatar', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             }
-            socket.emit(
+            socket.send(
                 'xmpp.avatar.metadata',
                 request,
                 callback
@@ -684,7 +684,7 @@ describe('Avatar', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             }
-            socket.emit(
+            socket.send(
                 'xmpp.avatar.metadata',
                 request,
                 callback
@@ -747,7 +747,7 @@ describe('Avatar', function() {
 
                 done()
             })
-            socket.emit(
+            socket.send(
                 'xmpp.avatar.metadata',
                 request,
                 function() {}
@@ -770,7 +770,7 @@ describe('Avatar', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             })
-            socket.emit('xmpp.avatar.data', {})
+            socket.send('xmpp.avatar.data', {})
         })
 
         it('Errors if non-function callback provided', function(done) {
@@ -785,7 +785,7 @@ describe('Avatar', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             })
-            socket.emit('xmpp.avatar.data', {}, true)
+            socket.send('xmpp.avatar.data', {}, true)
         })
 
         it('Errors if \'of\' key missing', function(done) {
@@ -802,7 +802,7 @@ describe('Avatar', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             }
-            socket.emit(
+            socket.send(
                 'xmpp.avatar.data',
                 request,
                 callback
@@ -823,7 +823,7 @@ describe('Avatar', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             }
-            socket.emit(
+            socket.send(
                 'xmpp.avatar.data',
                 request,
                 callback
@@ -847,7 +847,7 @@ describe('Avatar', function() {
                 items.getChild('item').attrs.id.should.equal(request.id)
                 done()
             })
-            socket.emit(
+            socket.send(
                 'xmpp.avatar.data',
                 request,
                 function() {}
@@ -870,7 +870,7 @@ describe('Avatar', function() {
                 id: '123456abcdef',
                 of: 'juliet@shakespeare.lit'
             }
-            socket.emit(
+            socket.send(
                 'xmpp.avatar.data',
                 request,
                 callback
@@ -892,7 +892,7 @@ describe('Avatar', function() {
                 id: '123456abcdef',
                 of: 'juliet@shakespeare.lit'
             }
-            socket.emit(
+            socket.send(
                 'xmpp.avatar.data',
                 request,
                 callback
@@ -920,7 +920,7 @@ describe('Avatar', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             }
-            socket.emit(
+            socket.send(
                 'xmpp.avatar.subscribe',
                 request,
                 callback
@@ -937,7 +937,7 @@ describe('Avatar', function() {
                     .should.equal(avatar.NS_META)
                 done()
             })
-            socket.emit(
+            socket.send(
                 'xmpp.avatar.subscribe',
                 request,
                 function() {}
@@ -962,7 +962,7 @@ describe('Avatar', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             }
-            socket.emit(
+            socket.send(
                 'xmpp.avatar.unsubscribe',
                 request,
                 callback
@@ -979,7 +979,7 @@ describe('Avatar', function() {
                     .should.equal(avatar.NS_META)
                 done()
             })
-            socket.emit(
+            socket.send(
                 'xmpp.avatar.unsubscribe',
                 request,
                 function() {}

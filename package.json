@@ -28,7 +28,7 @@
     "url": "https://github.com/lloydwatkin/xmpp-ftw-avatar/issues"
   },
   "dependencies": {
-    "ltx": "*",
+    "ltx": "~0.3.3",
     "xmpp-ftw-pubsub": "*"
   },
   "devDependencies": {
