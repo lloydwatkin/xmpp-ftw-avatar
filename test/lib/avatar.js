@@ -27,6 +27,12 @@ describe('Avatar', function() {
         avatar.init(manager)
     })
 
+    beforeEach(function() {
+        socket.removeAllListeners()
+        xmpp.removeAllListeners()
+        avatar.init(manager)
+    })
+
     describe('Handles', function() {
 
         it('Returns false for non-message stanzas', function() {
