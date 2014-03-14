@@ -21,6 +21,11 @@ describe('Avatar', function() {
             },
             makeCallback: function(error, data) {
                 this.callback(error, data)
+            },
+            getJidType: function(type) {
+                if ('bare' === type)
+                    return 'juliet@example.com'
+                throw new Error('Unknown JID type')
             }
         }
         avatar = new Avatar()
