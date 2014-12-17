@@ -83,6 +83,11 @@ describe('Avatar', function() {
                 '</message>'
             avatar.handle(ltx.parse(stanza))
         })
+        
+        it('Handles a bad stanza', function() {
+            var stanza = ltx.parse('<iq from="test@example.com" />')
+            avatar.handle(stanza).should.be.false
+        })
 
         it('Handles full metadata update', function(done) {
             socket.once('xmpp.avatar.push.metadata', function(data) {

@@ -12,6 +12,8 @@ See the XMPP-FTW demo repository - https://github.com/lloydwatkin/xmpp-ftw-demo
 # Build status
 
 [![Build Status](https://secure.travis-ci.org/lloydwatkin/xmpp-ftw-avatar.png)](http://travis-ci.org/lloydwatkin/xmpp-ftw-avatar)
+[![Dependency Status](https://david-dm.org/xmpp-ftw/xmpp-ftw-avatar.png)](https://david-dm.org/xmpp-ftw/xmpp-ftw-avatar)
+[![Coverage Status](https://img.shields.io/coveralls/xmpp-ftw/xmpp-ftw-avatar.svg)](https://coveralls.io/r/xmpp-ftw/xmpp-ftw-avatar?branch=master
 
 # Install
 
@@ -24,7 +26,4 @@ npm i --save xmpp-ftw-avatar
 ```
 npm test
 ```
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/xmpp-ftw/xmpp-ftw-avatar/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
