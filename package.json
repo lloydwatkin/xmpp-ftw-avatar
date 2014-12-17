@@ -1,6 +1,6 @@
 {
   "name": "xmpp-ftw-avatar",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "User avatar (XEP-0084) plugin for XMPP-FTW",
   "main": "index.js",
   "directories": {
