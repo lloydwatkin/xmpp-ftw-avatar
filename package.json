@@ -32,7 +32,7 @@
     "xmpp-ftw-pubsub": "1.x"
   },
   "devDependencies": {
-    "coveralls": "^2.11.2",
+    "coveralls": "^2.11.15",
     "grunt": "^0.4.5",
     "grunt-cli": "^0.1.13",
     "grunt-contrib-jshint": "~0.7.2",
