@@ -41,7 +41,7 @@
     "istanbul": "^0.3.5",
     "mocha": "^2.0.1",
     "should": "~1.2.2",
-    "xmpp-ftw": "1.x"
+    "xmpp-ftw": "2.0.0"
   },
   "peerDependencies": {
     "xmpp-ftw": "1.x"
