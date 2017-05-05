@@ -1,6 +1,8 @@
 xmpp-ftw-avatar
 =================
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/xmpp-ftw/xmpp-ftw-avatar.svg)](https://greenkeeper.io/)
+
 A user avatar (XEP-0084) plugin for XMPP-FTW.
 
 https://github.com/lloydwatkin/xmpp-ftw.git
